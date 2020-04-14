@@ -18,19 +18,33 @@
       <v-col>
         <v-card class="mx-auto">
           <v-toolbar>
-            <v-toolbar-title class="grey--text">{{ selectedsummoner.name }} played these X Summoners in the last 10 games...</v-toolbar-title>
+            <v-toolbar-title class="grey--text">{{ selectedsummoner.name }} played against X players like these in the last 10 games...</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon>
-              <v-icon>mdi-information</v-icon>
-            </v-btn>
+
+            <v-tooltip v-model="show" top max-width="50em">
+              <template v-slot:activator="{ on }">
+                <v-btn icon v-on="on">
+                  <v-icon color="grey lighten-1">mdi-information</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ selectedsummoner.name }} was matched against X players like these in the last X games, 
+                which means they are the types of players that {{ selectedsummoner.name }}
+                will be matched against in upcoming games.</span>
+            </v-tooltip>
+
           </v-toolbar>
           <v-divider></v-divider>
 
           <v-card-text style="height: 200px;">
             <vue-word-cloud
                 :words="yoursummoners"
-                :color="([, weight]) => weight > 10 ? 'DeepPink' : weight > 5 ? 'RoyalBlue' : 'Indigo'"
+                :color="(value) => wordcloudcolor(value)"
+                :weight="(value) => wordcloudweight(value)"
+                :rotation="(value) => wordcloudrotation(value)"
                 font-family="Roboto"
+                animation-overlap="5"
+                font-size-ratio="1.5"
+                rotation-unit="deg"
               />
           </v-card-text>
         </v-card>
@@ -38,7 +52,7 @@
       <v-col>
         <v-card class="mx-auto">
           <v-toolbar>
-            <v-toolbar-title class="grey--text">...and those X Summoners played these X Summoners in their last 10 games.</v-toolbar-title>
+            <v-toolbar-title class="grey--text">...and those X players played against X other players like these in their last X games.</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon>
               <v-icon>mdi-information</v-icon>
@@ -49,9 +63,9 @@
           <v-card-text style="height: 200px;">
             <vue-word-cloud
                 :words="theirsummoners"
-                :color="([value, weight]) => value.substring(0,1) == 'a' ? 'DeepPink' : value.substring(0,1) == 'y' ? 'RoyalBlue' : 'Indigo'"
-                :weight="([value, weight]) => value.substring(0,1) == 'a' ? 1 : value.substring(0,1) == 'y' ? 2 : 3"
-                :rotation="([value, weight, rotation]) => value.substring(0,1) == 'a' ? 15 : value.substring(0,1) == 'y' ? -15 : 0"
+                :color="(value) => wordcloudcolor(value)"
+                :weight="(value) => wordcloudweight(value)"
+                :rotation="(value) => wordcloudrotation(value)"
                 font-family="Roboto"
                 animation-overlap="5"
                 font-size-ratio="1.5"
@@ -89,14 +103,123 @@
     data: () => ({
       title: 'hello kitty',
       selectedsummoner: {},
+      wordcloudcolor: function (value) {
+        if (value.length > 15) {
+          return 'grey';
+        } else if (value.length > 10) {
+          return '#607D8B';
+        } else {
+          return 'black';
+        }
+      },
+      wordcloudweight: function (value) {
+        var len = value.length;
+        if (len > 20) {
+          len = 20;
+        }
+        return (5 - (len / 5));
+      },
+      wordcloudrotation: function (value) {
+        return (12 - value.length) * 2;
+      },
       yoursummoners: [
-        ['abcdefg', 1], ['akdjfs32433', 1], ['zzzzabcdefg', 1],
+        'abcdefg', 'akdj33', 'zzzzabcdefg',
+        'isse et scelerisque',
+'tellus Integer cons',
+'equat dict',
+'um massa',
+'eget plac',
+'erat erat Etiam',
+'posuere in felis soda',
+'les mollis',
+'Proin blandit',
+'piscing elit Curabit',
+'ur rutrum cursus',
+'purus Sed magna ante',
+'lacinia a risus nec',
+'fermentum luctus di',
+'am Pellentesque eg',
+'et tristique j',
+'usto Integer in',
+'tempor arcu',
+'Praesent feugiat',
+'elit at element',
+'um fringilla',
+'Cras aliquet aliqu',
+'am elit a mo',
+'lestie dolor consec',
+'tetur quis',
+'Aenean te',
+'mpor ipsum a ma',
+'lesuada',
+'accumsan felis nibh',
       ],
       theirsummoners: [
-        'sydfsdf-abcdefg', 'akdjfs32433', 'zzzzabcdefg',
-        'ysdfsdf-abcdefg', '4akdjfs32433', 'z4zzzabcdefg',
+        'sydfsdf-abcdefger', 'akdjf2433', 'zzzzabcdefg',
+        'ysdfsdfcdefg', '4akdjfs32433 sd fd', 'z4zzdefg',
         'sdfysdf-abcdefg', '3akdjfs32433', 'zzabcdefg',
-        'sdfsdfy-abcdefg', '1akdjfs32433', 'zzzabcdefg',
+        'sdfsy-abcdefg', '1akdj433', 'zzzabdefg',
+        'Lorem ips',
+'um dolor sit',
+'amet consec',
+'tetur adi',
+'piscing elit Curabit',
+'ur rutrum cursus',
+'purus Sed magna ante',
+'lacinia a risus nec',
+'fermentum luctus di',
+'am Pellentesque eg',
+'et tristique j',
+'usto Integer in',
+'tempor arcu',
+'Praesent feugiat',
+'elit at element',
+'um fringilla',
+'Cras aliquet aliqu',
+'am elit a mo',
+'lestie dolor consec',
+'tetur quis',
+'Aenean te',
+'mpor ipsum a ma',
+'lesuada',
+'accumsan felis nibh',
+'tempor ma',
+'gna eget',
+'commodo ma',
+'uris odio in',
+'mauris Vestibulum f',
+'elis quam',
+'luctus non magna v',
+'el pellentesque',
+'blandit',
+'tellus Prae',
+'sent et orci et null',
+'a iaculis tristi',
+'que Vestibulum in s',
+'emper velit i',
+'n semper diam',
+'Fusce tortor sem',
+'venenatis eu dictum',
+'eu posuere v',
+'olutpat magna F',
+'usce dict',
+'um diam vel null',
+'a semper molesti',
+'e Morbi ut dui',
+'orci Nu',
+'lla facilisi Nunc',
+'dui elit',
+'interdum id tempus la',
+'oreet ves',
+'tibulum sceler',
+'isque nisi Aliquam',
+'elementum commod',
+'o nisl et commodo',
+'Vivamus v',
+'ulputate',
+'non urna sit ame',
+
+
       ],
       headers: [
         {
