@@ -1,44 +1,84 @@
 <template>
+
   <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="50"
-        />
+    <v-row>
+      <v-col>
+        <v-select
+          v-model="selectedsummoner"
+          :items="summoners"
+          filled
+          label="Select a Summoner"
+          return-object
+          item-text="name"
+        >
+        </v-select>
       </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card class="mx-auto">
+          <v-toolbar>
+            <v-toolbar-title class="grey--text">{{ selectedsummoner.name }} played these X Summoners in the last 10 games...</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon>
+              <v-icon>mdi-information</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-divider></v-divider>
 
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          {{ selecteddessert.iron }} / {{ selecteddessert.name }}
-        </h1>
+          <v-card-text style="height: 200px;">
+            <vue-word-cloud
+                :words="yoursummoners"
+                :color="([, weight]) => weight > 10 ? 'DeepPink' : weight > 5 ? 'RoyalBlue' : 'Indigo'"
+                font-family="Roboto"
+              />
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card class="mx-auto">
+          <v-toolbar>
+            <v-toolbar-title class="grey--text">...and those X Summoners played these X Summoners in their last 10 games.</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon>
+              <v-icon>mdi-information</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-divider></v-divider>
 
-        <v-col class="d-flex" cols="12" sm="6">
-          <v-select
-            v-model="selecteddessert"
-            :items="desserts"
-            filled
-            label="Select a dessert"
-            return-object
-            item-text="name"
-          >
-          </v-select>
-        </v-col>
-
-        <template>
+          <v-card-text style="height: 200px;">
+            <vue-word-cloud
+                :words="theirsummoners"
+                :color="([value, weight]) => value.substring(0,1) == 'a' ? 'DeepPink' : value.substring(0,1) == 'y' ? 'RoyalBlue' : 'Indigo'"
+                :weight="([value, weight]) => value.substring(0,1) == 'a' ? 1 : value.substring(0,1) == 'y' ? 2 : 3"
+                :rotation="([value, weight, rotation]) => value.substring(0,1) == 'a' ? 15 : value.substring(0,1) == 'y' ? -15 : 0"
+                font-family="Roboto"
+                animation-overlap="5"
+                font-size-ratio="1.5"
+                rotation-unit="deg"
+              />
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title>
+            <v-icon large left>mdi-domain</v-icon>
+            <span class="title font-weight-light">Recommendations for {{ selectedsummoner.name }}</span>
+          </v-card-title>
           <v-data-table
             :headers="headers"
-            :items="selecteddessert.friends"
+            :items="selectedsummoner.friends"
             :items-per-page="5"
             class="elevation-1"
+            hide-default-footer
           ></v-data-table>
-        </template>
-        
+        </v-card>
       </v-col>
-
     </v-row>
+
   </v-container>
 </template>
 
@@ -48,10 +88,19 @@
 
     data: () => ({
       title: 'hello kitty',
-      selecteddessert: {},
+      selectedsummoner: {},
+      yoursummoners: [
+        ['abcdefg', 1], ['akdjfs32433', 1], ['zzzzabcdefg', 1],
+      ],
+      theirsummoners: [
+        'sydfsdf-abcdefg', 'akdjfs32433', 'zzzzabcdefg',
+        'ysdfsdf-abcdefg', '4akdjfs32433', 'z4zzzabcdefg',
+        'sdfysdf-abcdefg', '3akdjfs32433', 'zzabcdefg',
+        'sdfsdfy-abcdefg', '1akdjfs32433', 'zzzabcdefg',
+      ],
       headers: [
         {
-          text: 'Dessert (100g serving)',
+          text: 'summoner (100g serving)',
           align: 'start',
           sortable: false,
           value: 'name',
@@ -62,7 +111,7 @@
         { text: 'Protein (g)', value: 'protein' },
         { text: 'Iron (%)', value: 'iron' },
       ],
-      desserts: [
+      summoners: [
         {
           name: 'Frozen Yogurt',
           calories: 159,
