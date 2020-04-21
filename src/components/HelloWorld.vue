@@ -1,6 +1,12 @@
 <template>
 
   <v-container>
+
+
+    <v-row>
+      <Traits id="traits1"></Traits>
+    </v-row>
+
     <v-row>
       <v-col>
         <v-select
@@ -106,10 +112,11 @@
 
 <script>
   import Faces from './Faces.vue'
+  import Traits from './Traits.vue'
   export default {
     name: 'HelloWorld',
     components: {
-      Faces
+      Faces, Traits
     },
     data: () => ({
       title: 'hello kitty',
